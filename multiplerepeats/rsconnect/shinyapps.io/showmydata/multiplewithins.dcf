@@ -1,0 +1,11 @@
+name: multiplewithins
+title:
+username:
+account: showmydata
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 625911
+bundleId: 5502045
+url: https://showmydata.shinyapps.io/multiplewithins/
+when: 1643034319.33187
+lastSyncTime: 1643034319.33188
