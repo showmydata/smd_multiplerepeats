@@ -6,7 +6,7 @@ library(colourpicker)
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Repeated measures: 2+ measures"),
+  titlePanel("Repeated measures: multiple measures"),
   
   # Sidebar with a slider input for the number of bins
   sidebarLayout(

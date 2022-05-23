@@ -1,0 +1,11 @@
+name: multiplerepeats
+title:
+username:
+account: showmydata
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5742219
+bundleId: 5682947
+url: https://showmydata.shinyapps.io/multiplerepeats/
+when: 1647279418.44863
+lastSyncTime: 1647279418.44864
