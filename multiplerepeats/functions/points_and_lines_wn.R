@@ -1,4 +1,4 @@
-my_points_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
+my_points_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, showp, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
   data=isolate_complete_pairs(x,y); 
   x=data[,1]; y=data[,2];
   xmean=mean(x, na.rm = TRUE); ymean=mean(y, na.rm = TRUE); 
@@ -20,7 +20,7 @@ my_points_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, coh
   }
 }
 
-my_line_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
+my_line_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, showp, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
   data=isolate_complete_pairs(x,y); 
   x=data[,1]; y=data[,2];
   xmean=mean(x, na.rm = TRUE); ymean=mean(y, na.rm = TRUE); 
@@ -43,7 +43,7 @@ my_line_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohen
   }
 }
 
-my_curve_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
+my_curve_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, showp, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
   data=isolate_complete_pairs(x,y);   
   x=data[,1]; y=data[,2];
   xmean=mean(x, na.rm = TRUE); ymean=mean(y, na.rm = TRUE); 
@@ -70,7 +70,7 @@ my_curve_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohe
   }
 }
 
-my_lineandcurve_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, cohensd, digits, perc_rank, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
+my_lineandcurve_rm <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, cohensd, digits, perc_rank, showp, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...){
   data=isolate_complete_pairs(x,y); 
   x=data[,1]; y=data[,2];
   xmean=mean(x, na.rm = TRUE); ymean=mean(y, na.rm = TRUE); 

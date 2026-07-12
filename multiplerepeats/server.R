@@ -3,6 +3,7 @@ library(shiny)
 library(psychometric)
 library(stringr)
 library(tidyr)
+library(readr)
 #library(dplyr)
 source("functions/equate_raw_axis_ranges.R")    # Need
 source("functions/pairs2wn.R")                  # Need
@@ -12,25 +13,53 @@ source("functions/perc_rank_rm.R")              # Need
 source("functions/isolate_complete_pairs.R")    # Redundant with multiplecorrelations
 source("functions/jitter_by_percent_min_wn.R")  # Need
 
+source("functions/make_url.R") 
+source("functions/parse_url.R") 
+source("functions/add_data_link_to_url.R")
+source("functions/get_data_from_url.R")
+library("gsheet")
 
-shinyServer( 
-  function(input, output) { # Create the function
-    # Grabs user-specified height and width
-    output$ui_plot <- renderUI({plotOutput("contents", width = input$plotsize*8, height = input$plotsize*8)})
-    output$contents <- renderPlot( { # Call Shiny function that makes the plot
-    # Process any pasted data
+
+shinyServer( # Initiate the shiny server
+  function(input, output, session) { # Create the function -- added 'session' for URL project 3/22/24
+    
+# Re-render UI with user-specified height and width
+  output$ui_plot <- renderUI({plotOutput("contents", width = input$plotsize*8, height = input$plotsize*8)})
+  
+# Run function that makes the plot
+  output$contents <- renderPlot( { # Call Shiny function that makes the plot
+    
+# Process any pasted data
       if(input$myData>"") {
-        t <- read.table(text = input$myData, sep = '\t', header = TRUE); 
+        # Next 3 lines added 8/15/23
+        v=unlist(strsplit(input$myData,"\n")); v=unlist(strsplit(v[1],"\t")); # Read 'header' exactly, regardless of characters
+        if(!all(is.na(as.numeric(v)))) for (i in 1:length(v)) v[i]=paste("column ",i); # If 'header' has any numbers (is not all words), replace with "column i"
+        d0=gsub(",","",input$myData); d0=gsub("'","",d0); d0=gsub("‘","",d0); d0=gsub("’","",d0); d0=gsub('"',"",d0); d0=gsub("“","",d0); d0=gsub("”","",d0) # Replace various characters that produce errors
+        for (i in 1:length(v)) { vv=v[i]; # For each variable label
+        if (nchar(vv)>20) { # If the variable label is >20 length, add a carriage return at the last space before the 20th character
+          b=unlist(gregexpr(' ', vv)); c=max(b[b<20]); vv=paste(substr(vv,1,c-1), "\n", substr(vv,c+1,nchar(vv)), sep=""); v[i]=vv
+        }}
+        
+        t <- read.table(text = d0, sep = '\t', header = TRUE); 
         t=lapply(t, as.numeric); t=as.data.frame(t);
-        tt <- read.table(text = input$myData, sep = '\t', header = FALSE); 
+        tt <- read.table(text = d0, sep = '\t', header = FALSE); 
         tt=lapply(tt, as.numeric); tt=as.data.frame(tt);
         # The entire top row should be NA if they've entered variable names ... 
         # if so, assume header, if not, don't assume header
         if (all(is.na(tt[1,]))) t=t else t=tt
       } else {
         t=read.csv("within_demodata.csv",check.names=FALSE)
+        t=as.data.frame(get_data_from_url(t,session,input$datalink))
+        v=colnames(t)
       } 
-      v=colnames(t); v=gsub("\\.", " ", as.character(v))
+    t=as.data.frame(t);
+    # 3/27/24 -- copy-pasted from TMB version of app -- hoping it will deal with periods and other characters in google sheet
+    v=gsub(".", " ", v, fixed=TRUE); v=gsub(",","",v); v=gsub("'","",v); v=gsub("‘","",v); v=gsub("’","",v); v=gsub('"',"",v); v=gsub("“","",v); v=gsub("”","",v) # Replace various characters that produce errors
+    # for (i in 1:length(v)) { vv=v[i]; # For each variable label
+    # if (nchar(vv)>20) { # If the variable label is >20 length, add a carriage return at the last space before the 20th character
+    #   b=unlist(gregexpr(' ', vv)); c=max(b[b<20]); vv=paste(substr(vv,1,c-1), "\n", substr(vv,c+1,nchar(vv)), sep=""); v[i]=vv
+    # }}
+
     # Transform data into percentile ranks
     if (input$spearman==TRUE) t=perc_rank_rm(t) 
     # Figure out max difference
@@ -77,19 +106,31 @@ shinyServer(
     if(input$lower=="stats") l="panel_cor2wn" else if (input$lower=="data") l=p else if (input$lower=="neither") l=NULL
     ticks=c(FALSE,FALSE); if(input$lower=="data") ticks[1]=TRUE; if(input$upper=="data") ticks[2]=TRUE; 
     adj=(input$ticklabelsize+10)/39 # a hack to adjust the bottom tick labels to match the left tick labels as they get bigger & smaller
+    title_extra=str_count(input$graphtitle,"\n") # carriage returns in the title
     makemyplot <- function() {
       par(pty="s")
-      pairs2wn(t, panel=p, cex.axis=(input$ticklabelsize+1)/25, adj=adj, 
-             upper.panel=u, lower.panel=l, xlim=xlim, ylim=ylim, jdata=t1, 
-             pch=as.numeric(input$dottype), cex=input$dotsize/20, 
+      #par(mar = c(4 + title_extra*3, 4 + title_extra*3, 4 + title_extra*3, 4 + title_extra*3) + 0.1)
+      par(oma = c(0, 0, 3 + title_extra*1.5, 0))
+      pairs2wn(t, panel=p, cex.axis=(input$ticklabelsize+1)/25, adj=adj,
+             upper.panel=u, lower.panel=l, xlim=xlim, ylim=ylim, jdata=t1,
+             pch=as.numeric(input$dottype), cex=input$dotsize/20,
              col=rgb(red=0.0, green=0.0, blue=0.0, alpha=input$dotopacity/100),
              main=input$graphtitle, cex.main=3, lw=input$lw/10, ss=input$ss/20, smoothness=input$smoothness/100,
              digits=input$digits, perc_rank=input$spearman, sp=FALSE, domedian=input$addmedian, domean=input$addmean, do95CI=input$add95ci,
              cohensd=input$standardizestats, ticks=ticks,
-             dotint=dotint, panelcolor=tintcolor, tintmaxdiff=maxtintdiff)
-    }
+             dotint=dotint, panelcolor=tintcolor, tintmaxdiff=maxtintdiff,
+             showp=input$showp)
+    } # end makemyplot
     makemyplot()
-
+      settings=reactiveValuesToList(input);
+      theurl=make_url(settings, get_all=FALSE, 
+                      datalink=input$datalink, 
+                      appurl="https://showmydata.shinyapps.io/multiplerepeats"); 
+      theurl=gsub("\\n","\n",theurl,fixed=TRUE); theurl=gsub("\n","newline",theurl,fixed=TRUE); 
+      output$clip <- renderUI({ rclipButton(inputId = "clipbtn", icon = icon("clipboard"), 
+                                            label = "Copy link with current settings", 
+                                            clipText = theurl)}) 
+    
   # Save as 'filename' the 'content'
     output$down <- downloadHandler(
       filename =  function() {
@@ -104,5 +145,9 @@ shinyServer(
         makemyplot()
         dev.off()  # turn the device off
       })
-  })
-  })
+  }) # end renderPlot
+  
+  # Get link, Make link, Add URL
+  observe({ urlstring=session$clientData$url_search; if (urlstring!="") session <- parse_url(urlstring, session) }) # updates session
+  
+  }) # end main function

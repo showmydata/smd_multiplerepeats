@@ -56,7 +56,8 @@ pairs2wn.default <-
             cohensd=NULL, perc_rank=NULL,
             domedian = TRUE, domean = TRUE, do95CI = TRUE,
             ticks=NULL,
-            dotint=NULL, panelcolor=NULL, tintmaxdiff=NULL) 
+            dotint=NULL, panelcolor=NULL, tintmaxdiff=NULL,
+            showp=NULL) 
   {
     if(doText <- missing(text.panel) || is.function(text.panel))
       textPanel <-
@@ -109,9 +110,9 @@ pairs2wn.default <-
     nc <- ncol(x)
     if (nc < 2L) stop("only one column in the argument to 'pairs'")
     
-    if(!all(horInd >= 1L && horInd <= nc))
+    if(!all(1L <= horInd & horInd <= nc))
       stop("invalid argument 'horInd'")
-    if(!all(verInd >= 1L && verInd <= nc))
+    if(!all(1L <= verInd & verInd <= nc))
       stop("invalid argument 'verInd'")
     
     if(doText) {
@@ -123,8 +124,9 @@ pairs2wn.default <-
     }
     oma  <- if("oma"  %in% nmdots) dots$oma
     main <- if("main" %in% nmdots) dots$main
+    title_extra=str_count(main,"\n") # carriage returns in the title
     if (is.null(oma))
-      oma <- c(4, 4, if(!is.null(main)) 6 else 4, 4)
+      oma <- c(if(!is.null(main)) 7 + title_extra*4.5 else 4, if(!is.null(main)) 7 + title_extra*4.5 else 4, if(!is.null(main)) 7 + title_extra*4.5 else 4, if(!is.null(main)) 7 + title_extra*4.5 else 4)
     opar <- par(mfcol = c(length(horInd), length(verInd)), mar = rep.int(gap/2, 4), oma = oma)
     on.exit(par(opar))
     dev.hold(); on.exit(dev.flush(), add = TRUE)
@@ -189,8 +191,8 @@ pairs2wn.default <-
               text.panel(xlp, ylp, l2, cex=cex.labels, font=font.labels)     # print l2
             }
           } 
-          else if(i < j) localLowerPanel(as.vector(x[, j]), as.vector(x[, i]), as.vector(jdata[, j]), as.vector(jdata[, i]), sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...)
-          else localUpperPanel(as.vector(x[, j]), as.vector(x[, i]), as.vector(jdata[, j]), as.vector(jdata[, i]), sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...)
+          else if(i < j) localLowerPanel(as.vector(x[, j]), as.vector(x[, i]), as.vector(jdata[, j]), as.vector(jdata[, i]), sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, showp, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...)
+          else localUpperPanel(as.vector(x[, j]), as.vector(x[, i]), as.vector(jdata[, j]), as.vector(jdata[, i]), sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, showp, domedian, domean, do95CI, dotint, panelcolor, tintmaxdiff, ...)
           if (any(par("mfg") != mfg))
             stop("the 'panel' function made a new plot")
         }

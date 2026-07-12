@@ -1,7 +1,6 @@
-panel_cor2wn <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, domedian, domean, do95CI, cex.cor, ...)
+panel_cor2wn <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, cohensd, perc_rank, showp, domedian, domean, do95CI, cex.cor, ...)
 {
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
+  usr <- par("usr"); on.exit(par(usr)); par(usr = c(0, 1, 0, 1)) # Not sure what this was supposed to accomplish
   data=isolate_complete_pairs(x,y); # isolate complete pairs
   #if (perc_rank) {data=perc_rank(data)} # re-rank data with just these pairs for correct spearman correlations
   # compute correlation coefficient & n
@@ -26,8 +25,11 @@ panel_cor2wn <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, coh
   }
   if (sp) txt5 <- paste(num1, sep = "") else txt5 <- paste(num1, sep = "") # r or rho
   
-  num2 <- format(c(n, 0.123456789), digits = 0, scientific = FALSE)[1] # n text
-  txt6 <- paste("n = ", num2, sep = "") # n
+  num2 <- n#format(c(n, 0.123456789), digits = 0, scientific = FALSE)[1] # n text
+  
+  pv=signif(thet$p.value,3)
+  if (showp) txt6 <- paste("p = ", pv, sep = "") else txt6 <- paste("n = ", num2, sep = "") # p or n
+  #txt6 <- paste("n = ", num2, sep = "") # n
   
   txt7 <- paste(" 95% CI =", sep= "") # text introducing the 95% CI
   
@@ -40,8 +42,10 @@ panel_cor2wn <- function(x, y, x1, y1, sp, nvar, lw, ss, smoothness, digits, coh
   }
   txt8 <- paste("[", num3, ", ", num4, "]", sep = "") # 95% CI itself
   
+  
 #  txt6 <- paste("t(", thet[2]$parameter, ")=", round(thet[1]$statistic,2), sep = "")
 #  txt7 <- paste("p=", round(thet[3]$p.value,3),sep="")
+  
   
   # write text
   text(0.5, 0.80, txt9, cex=.75/(nvar/9), font=2)
