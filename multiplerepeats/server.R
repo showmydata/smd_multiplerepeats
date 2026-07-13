@@ -4,7 +4,8 @@ library(psychometric)
 library(stringr)
 library(tidyr)
 library(readr)
-#library(dplyr)
+library(gsheet)
+
 source("functions/equate_raw_axis_ranges.R")    # Need
 source("functions/pairs2wn.R")                  # Need
 source("functions/panel_cor2wn.R")              # Need
@@ -12,12 +13,10 @@ source("functions/points_and_lines_wn.R")       # Need
 source("functions/perc_rank_rm.R")              # Need
 source("functions/isolate_complete_pairs.R")    # Redundant with multiplecorrelations
 source("functions/jitter_by_percent_min_wn.R")  # Need
-
 source("functions/make_url.R") 
 source("functions/parse_url.R") 
 source("functions/add_data_link_to_url.R")
 source("functions/get_data_from_url.R")
-library("gsheet")
 
 
 shinyServer( # Initiate the shiny server

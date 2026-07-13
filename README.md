@@ -19,9 +19,13 @@ This application creates graphs for repeated-measures designs involving three or
 ```r
 install.packages(c(
   "shiny",
-  "tidyverse",
-  "ggridges",
-  "ggthemes"
+  "psychometric",
+  "stringr",
+  "tidyr",
+  "readr",
+  "gsheet",
+  "colourpicker",
+  "rclipboard"
 ))
 ```
 
