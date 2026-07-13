@@ -31,9 +31,9 @@ install.packages(c(
 
 ```r
 shiny::runGitHub(
-  repo = "smd_repeatedmeasuresmultiple",
+  repo = "smd_multiplerepeats",
   username = "ShowMyData",
-  subdir = "repeatedmeasuresmultiple"
+  subdir = "multiplerepeats"
 )
 ```
 
